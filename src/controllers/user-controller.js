@@ -41,7 +41,28 @@ const signIn = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       success: false,
-      message: "incorrect password",
+      message: "something went wrong",
+      data: {},
+      err: error,
+    });
+  }
+};
+
+const isAuthenticated = async (req, res) => {
+  try {
+    const token = req.headers["x-access-token"];
+    const response = await userService.isAuthenticated(token);
+    return res.status(201).json({
+      success: true,
+      message: "user is authenticated and token is valid",
+      data: response,
+      err: {},
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "something went wrong",
       data: {},
       err: error,
     });
@@ -51,4 +72,5 @@ const signIn = async (req, res) => {
 module.exports = {
   create,
   signIn,
+  isAuthenticated,
 };

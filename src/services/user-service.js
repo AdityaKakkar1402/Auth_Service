@@ -4,12 +4,12 @@ const bcrypt = require("bcrypt");
 const { JWT_KEY } = require("../config/serverConfig");
 class UserService {
   constructor() {
-    this.UserRepository = new UserRepository();
+    this.userRepository = new UserRepository();
   }
 
   async create(data) {
     try {
-      const user = await this.UserRepository.create(data);
+      const user = await this.userRepository.create(data);
       return user;
     } catch (error) {
       console.log("something wrong with service layer");
@@ -19,7 +19,7 @@ class UserService {
 
   async destroy(userId) {
     try {
-      const response = await this.UserRepository.destroy(userId);
+      const response = await this.userRepository.destroy(userId);
       return response;
     } catch (error) {
       console.log("something wrong with service layer");
@@ -29,7 +29,7 @@ class UserService {
 
   async signIn(email, plainPassword) {
     try {
-      const user = await this.UserRepository.getByEmail(email);
+      const user = await this.userRepository.getByEmail(email);
       const passwordsMatch = this.checkPassword(plainPassword, user.password);
       if (!passwordsMatch) {
         console.log("password doesnt match");
@@ -40,6 +40,23 @@ class UserService {
     } catch (error) {
       console.log("something wrong with signin service");
       throw { error };
+    }
+  }
+
+  async isAuthenticated(token) {
+    try {
+      const response = this.verifyToken(token);
+      if (!response) {
+        throw { error: "Invalid token" };
+      }
+      const user = await this.userRepository.getById(response.id);
+      if (!user) {
+        throw { error: "no user with corresponding token" };
+      }
+      return user.id;
+    } catch (error) {
+      console.log("Something went wrong in the auth process");
+      throw error;
     }
   }
 

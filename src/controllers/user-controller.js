@@ -16,11 +16,11 @@ const create = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({
+    return res.status(error.statusCode).json({
       success: false,
-      message: "something went wrong in controller",
+      message: error.message,
       data: {},
-      err: error,
+      err: error.explanation,
     });
   }
 };
@@ -31,7 +31,7 @@ const signIn = async (req, res) => {
       req.body.email,
       req.body.password
     );
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: "successfully loggedin",
       data: response,
@@ -39,11 +39,11 @@ const signIn = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({
+    return res.status(error.statusCode).json({
       success: false,
-      message: "something went wrong",
+      message: error.message,
       data: {},
-      err: error,
+      err: error.explanation,
     });
   }
 };
